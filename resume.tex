@@ -1,0 +1,291 @@
+\documentclass[10pt, a4paper]{article}
+
+  \usepackage[utf8]{inputenc}
+  \usepackage[pdftex]{hyperref}
+  \usepackage{microtype}
+  \usepackage[default]{lato}
+  \usepackage{dashrule}
+  \usepackage[margin=2cm, bottom=1.5in]{geometry}
+  \usepackage{fontawesome}
+  \usepackage{xcolor}
+  \usepackage{titlesec}
+  \usepackage{environ}
+  \usepackage{tikz}
+  \usepackage{etoolbox}
+  \usepackage{fancyhdr}
+  \usepackage{lastpage}
+  \usepackage[T1]{fontenc}
+  \renewcommand{\mddefault}{l}
+  \usetikzlibrary{arrows}
+  \input{myinfo.tex}
+
+  % Adjust margins
+  \addtolength{\oddsidemargin}{-0.5in}
+  \addtolength{\evensidemargin}{-0.5in}
+  \addtolength{\textwidth}{1in}
+  \addtolength{\topmargin}{-0.2in}
+  \addtolength{\textheight}{1.0in}
+
+  % Set up footer
+  \pagestyle{fancy}
+  \fancyhf{}
+  \fancyfoot{} % clear all footer fields
+  \fancyfoot[L]{\color{body!30}\phonetxt\space | \emailtxt}
+  \fancyfoot[R]{\color{body!30}\firstnametxt\space\lastnametxt}
+  \fancyfoot[C]{\color{body!30}\thepage\space of \pageref{LastPage}}
+  \renewcommand{\headrulewidth}{0mm}
+  
+  % Define some colors
+  \definecolor{DeepOrange}{HTML}{FF5722}
+  \definecolor{DarkBody}{HTML}{000000}
+  \colorlet{accent}{DeepOrange}
+  \colorlet{body}{DarkBody}
+  
+  % Divider
+  \newcommand{\divider}{\textcolor{body!30}{\hdashrule{0.97\linewidth}{0.6pt}{0.5ex}}\medskip}
+  
+  % Define name
+  \newcommand{\name}[2]{
+    {\fontsize{35}{45}\selectfont \textcolor{body}{\textls[60]{#1}}}
+      {\bfseries\fontsize{35}{45}\selectfont \textls[60]{#2}}
+      \vspace{3.44mm}
+  }
+  
+  % Define contact
+  \newcommand{\mobile}[1]{\faPhone\space{#1}}
+  \newcommand{\email}[1]{\faEnvelope\space{#1}}
+  \newcommand{\github}[1]{\faGithubAlt\space{#1}}
+  \newcommand{\linkedin}[1]{\faLinkedin\space{#1}}
+  
+  % Heading Formatting
+  \newcommand{\head}[5]{
+    {#1}\\
+      \begin{tabular*}{\textwidth}{c c c c c}
+        & #2 & #3 & #4 & #5
+      \end{tabular*}
+      {\color{body}\hrule}\vspace{12pt}
+  }
+  
+  % Section title formatting
+  \titleformat{\section}
+    {\scshape\Large\color{accent}}{}{1em}{}[\titlerule]
+    
+  % Resume Sub Headings
+  \newcommand{\subHeading}[4]{
+      \begin{tabular*}{0.99\textwidth}{l@{\extracolsep{\fill}}r}
+        \large{#1}\vspace{4pt} & \faMapMarker\space{#2} \\
+        \color{accent}{#3} & \faCalendar\space{#4}
+      \end{tabular*}\vspace{-3pt}
+  }
+  
+  % Resume Bullet Points
+  \newcommand{\subHeadingBulletPt}[1]{
+    \item\textit{#1}\vspace{-5pt}
+  }
+  
+  \newcommand{\subHeadingItemListStart}{
+  \begin{itemize}
+  }
+  
+  \newcommand{\subHeadingItemListEnd}{
+  \end{itemize}
+  \vspace{5pt}
+  }
+  
+  %Skill Table
+  \newcommand{\skilltable}[2]{
+    \begin{tabular*}{0.99\textwidth}{p{0.3\textwidth}@{\extracolsep{\fill}}p{0.5\textwidth}}
+      \textbf{#1} & \textit{#2}
+      \vspace{5pt}
+    \end{tabular*}
+  }
+  
+  \newcommand{\cvskill}[2]{
+  \textcolor{body}{\textbf{#1}}\hfill
+  \foreach \x in {1,...,5}{
+    \space{\ifnumgreater{\x}{#2}{\color{body!30}}{\color{accent}}\faCircle}}\par
+  }
+  
+  % Adapted from @Jake's answer at http://tex.stackexchange.com/a/82729/226
+  % Adjusts the size of the wheel:
+  \def\innerradius{0.7cm}
+  \def\outerradius{2.0cm}
+  
+  % The main macro
+  \newcommand{\wheelchart}[1]{
+      % Calculate total
+      \pgfmathsetmacro{\totalnum}{0}
+      \foreach \value/\colour/\name in {#1} {
+          \pgfmathparse{\value+\totalnum}
+          \global\let\totalnum=\pgfmathresult
+      }
+  
+      \vspace{10pt}\begin{tikzpicture}
+  
+        % Calculate the thickness and the middle line of the wheel
+        \pgfmathsetmacro{\wheelwidth}{\outerradius-\innerradius}
+        \pgfmathsetmacro{\midradius}{(\outerradius+\innerradius)/2}
+  
+        % Rotate so we start from the top
+        \begin{scope}[rotate=130]
+  
+        % Loop through each value set. \cumnum keeps track of where we are in the wheel
+        \pgfmathsetmacro{\cumnum}{0}
+        \foreach \value/\width/\colour/\name in {#1} {
+              \pgfmathsetmacro{\newcumnum}{\cumnum + \value/\totalnum*360}
+  
+              % Calculate the percent value
+              \pgfmathsetmacro{\percentage}{\value/\totalnum*100}
+              % Calculate the mid angle of the colour segments to place the labels
+              \pgfmathsetmacro{\midangle}{-(\cumnum+\newcumnum)/2}
+  
+              % This is necessary for the labels to align nicely
+              \pgfmathparse{
+                 (-\midangle<180?"west":"east")
+              } \edef\textanchor{\pgfmathresult}
+              \pgfmathsetmacro\labelshiftdir{1-2*(-\midangle>180)}
+  
+              % Draw the color segments. Somehow, the \midrow units got lost, so we add 'pt' at the end. Not nice...
+              \fill[\colour] (-\cumnum:\outerradius) arc (-\cumnum:-(\newcumnum):\outerradius) --
+              (-\newcumnum:\innerradius) arc (-\newcumnum:-(\cumnum):\innerradius) -- cycle;
+  
+              % Draw the data labels
+              \draw  [*-,thin] node [append after command={(\midangle:\midradius pt) -- (\midangle:\outerradius + 1ex) -- (\tikzlastnode)}] at (\midangle:\outerradius + 1ex) [xshift=\labelshiftdir*0.5cm,inner sep=0pt, outer sep=0pt, text width=\width,anchor=\textanchor, text=body]{\name};
+  
+  
+              % Set the old cumulated angle to the new value
+              \global\let\cumnum=\newcumnum
+          }
+  
+        \end{scope}
+  %      \draw[gray] (0,0) circle (\outerradius) circle (\innerradius);
+      \end{tikzpicture}
+  }
+  
+  %---------------------------------------------
+  %%%%%%%%%%%%%%% CV Starts Here %%%%%%%%%%%%%%%
+  
+  \begin{document}
+    
+    \head
+      {\name{\firstnametxt}{\lastnametxt}}
+        {\mobile{
+          \href{tel:\phonetxt}{\phonetxt}}}
+        {\email{
+          \href{mailto:\emailtxt}{\emailtxt}}}
+        {\linkedin{
+          \href{https://www.\linkedIntxt}{\linkedIntxt}}}
+        {\github{
+          \href{https://\githubtxt}{\githubtxt}}}
+  
+    \section{Experience}
+      \subHeading{Developer, Co-founder}
+                {\href{http://maps.google.com/maps?q=Lansing,MI}
+                {Lansing, MI.}}
+                {MenuBubble LLC.}{March 2018 - Present}
+          \subHeadingItemListStart
+            \subHeadingBulletPt{Developed and maintains online meal prep and food delivery service for the Greater Lansing Area. 
+                                A fullstack effort for which I am the sole developer.}
+            \subHeadingBulletPt{Produce digital media content for branding and ads using Adobe Suite.}
+            \subHeadingBulletPt{Manages social media business accounts.}
+            \subHeadingBulletPt{Perform unit tests, e2e tests, and A/B Tests.}
+            \subHeadingBulletPt{Manage and maintain source control and CI/CD in
+              \href{https://about.gitlab.com/}{Gitlab.}
+                }
+          \subHeadingItemListEnd
+
+      \divider
+    
+        \noindent\subHeading{Software Developer}
+                  {
+                            \href{http://maps.google.com/maps?q=Hartford,CT}{Hartford, CT.}}
+                  {Insurity Inc.}{March 2014 - Present}
+          \subHeadingItemListStart
+            \subHeadingBulletPt{Worked on SCRUM teams to produce new software, and enhancements for existing software for company's clients.}
+            \subHeadingBulletPt{Refactored thousands of lines of legacy code and test to allow for more rapid future development.}
+            \subHeadingBulletPt{Developed XML and JSON-based API services.}
+            \subHeadingBulletPt{Perform code reviews and unit testing.}
+            \subHeadingBulletPt{Maintain source control in TFS.}
+          \subHeadingItemListEnd
+          
+      \divider
+     
+      \noindent\subHeading{Programmer Analyst}
+                  {
+                          \href{http://maps.google.com/maps?q=New\%20Haven,CT}{New Haven, CT.}}
+                {Cogstate Inc.}{February 2013 - November 2013}
+        \subHeadingItemListStart
+          \subHeadingBulletPt{Worked on development team to build and maintain company’s flagship cognition assessment product; a fullstack development effort.}
+          \subHeadingBulletPt{Perform unit testing.}
+          \subHeadingBulletPt{Maintain source control using Subversion.}
+        \subHeadingItemListEnd
+    
+      \divider
+    
+      \noindent\subHeading{Application Developer/IT Support}
+                {
+                          \href{http://maps.google.com/maps?q=Trinidad\%20and\%20Tobago}{Trinidad and Tobago, WI}}
+              {Arima Diagnostic Clinic.}{March 2011 - June 2012}
+      \subHeadingItemListStart
+        \subHeadingBulletPt{Worked on design/development team to build requirements and produce enhancements the clinic's intranet electronic health record solution.}
+        \subHeadingBulletPt{Perform unit testing.}
+        \subHeadingBulletPt{Assisted clinic staff with basic networking, hardware and software related issues.}
+      \subHeadingItemListEnd
+         
+      \divider
+    
+    \section{Education}
+      \normalsize\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+          \textcolor{accent}{University of Greenwich;}  & 
+          \faMapMarker{\href{http://maps.google.com/maps?q=Trinidad\%20and\%20Tobago}{Trinidad and Tobago, West Indies}} \\
+            School of Computing and Mathematical Science & \faCalendar{ July 2012}\\
+            Off Campus Center at School of Business and Computer Science
+        \end{tabular*}
+        \subHeadingItemListStart
+          \subHeadingBulletPt{Bachelor of Science -- Computer Science}
+        \subHeadingItemListEnd
+          
+      \divider
+    
+    \section{Websites \& Projects}
+        \begin{itemize}
+          \item \href{https://www.menububble.com/}{\textit{menububble.com}} -- Online meal prep and food delivery service serving Greater Lansing, MI.
+              \item \href{https://www.eutoro.com/}{\textit{eutoro.com}} -- LAMP stack service for youtubers, bloggers and small online start-ups that aims to achieve traction through collaboration.
+              \item \href{http://www.division5ct.com}{\textit{division5ct.com}} -- Bootstrap website for miscellaneous metals company.
+              \item \href{https://chrome.google.com/webstore/detail/dynamiccsseditor/edgmppgmaklmaggkamddmgpphellcmhf}{\textit{DynamicCSSEditor}} \textit{(Chrome Web Store)} -- Chrome extension for live preview editing css online.
+        \end{itemize}
+     
+      \divider
+            
+    \section{Skills \& Strengths}
+        \skilltable{Operating Systems}{Windows, Linux (Debian and Ubuntu dist)}\\
+        \skilltable{Visual Design Applications}{Adobe Photoshop, Adobe Illustrator, Adobe Edge Animate}\\
+        \skilltable{Programming}{Javascript(jQuery, Angular 4, Node), VB6, VB.NET, C\# (ASP.NET), PHP (CodeIgniter)}\\
+        \skilltable{Design}{ CSS3 - Bootstrap, Material design, Sass}\\
+        \skilltable{Data Technology}{MSSQL, MySQL, \href{https://firebase.google.com/}{Firebase}}\\
+        \skilltable{Development Tools}{Visual Studios, VSCode, Vi, Subversion, 
+                    Git (\href{https://about.gitlab.com}{Gitlab} \& \href{https://github.com/}{Github}), TFS, 
+                    \href{https://www.atlassian.com/software/jira}{Jira}, cPanel, \href{https://www.docker.com/}{Docker}, 
+                    Karma, \href{https://www.seleniumhq.org/}{Selenium}}
+        
+      \divider
+    
+        \wheelchart{
+          33/22em/accent/Web Design -- (Storyboarding UI \& UX) with javascript \& bootstrap \& adobe creative suite, 
+          5/18em/accent!10/Marketing -- SEO; AB Testing \& social media marketing and advertising,
+          5/22em/accent!40/Testing; Unit testing. e2e Testing. AB Testing,
+          13/24em/accent/Data Technology-- Transact-SQL \& stored procs; noSQL (\href{https://firebase.google.com/}{firebase} realtime db),
+          26/18em/accent!70/Software development -- experience with component based-architecture \& service-oriented architecture \& MVC style architecture. RESTful APIs dev., 
+          9/15em/accent!40/DevOps -- Continuous development \& Integration \& source control; using git and \href{https://about.gitlab.com/}{gitlab},
+          9/17em/accent!20/Agile Software Development -- using Kanban \& Scrum practices and tools (\href{https://kanbanflow.com}{kanbanflow}; \href{https://www.atlassian.com/software/jira}{jira})
+        }
+    
+      \divider 
+    
+    \section{References}
+        \vspace{5pt}
+        \hspace{15pt}\raggedright{Available on Request}
+      
+  
+  \end{document}
+  

@@ -1,0 +1,7 @@
+resume.*
+coverletter.*
+__latex*
+myinfo.tex
+
+!resume.tex
+!coverletter.tex

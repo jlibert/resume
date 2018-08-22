@@ -1,0 +1,111 @@
+\documentclass[11pt, a4paper]{article}
+    
+\usepackage[utf8]{inputenc}
+\usepackage[pdftex]{hyperref}
+\usepackage{geometry}
+\usepackage{fontawesome}
+\usepackage[default]{lato}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\renewcommand{\mddefault}{l}
+\input{myinfo.tex}
+
+\geometry{left=1.4cm, top=.8cm, right=1.4cm, bottom=1.8cm, footskip=.5cm}
+
+% Define some colors
+\definecolor{DeepOrange}{HTML}{FF5722}
+\definecolor{Grey}{HTML}{444444}
+\definecolor{LightGrey}{HTML}{999999}
+\colorlet{accent}{DeepOrange}
+\colorlet{body}{Grey}
+\colorlet{light}{LightGrey}
+
+% Set up footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{} % clear all footer fields
+\fancyfoot[L]{\color{body!30}\emailtxt}
+\fancyfoot[R]{\color{body!30}\firstnametxt\space\lastnametxt}
+\fancyfoot[C]{\color{body!30}\thepage\space of \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0mm}
+
+% Define Name
+\newcommand{\name}[2]{
+	{\fontsize{40}{50}\selectfont \textcolor{body}{#1}}
+    {\bfseries\fontsize{40}{50}\selectfont #2}}
+
+% Define Position
+\newcommand{\position}[1]{
+	{\bfseries\textcolor{accent}{\small\scshape{#1}}}\vspace{2pt}
+}
+
+% Define address
+\newcommand{\address}[1]{
+	\faMapMarker\space\textit{#1}\vspace{2pt}
+}
+
+% Define contact
+\newcommand{\mobile}[1]{\small{\faPhone\space{#1}}}
+\newcommand{\email}[1]{\small{\faEnvelope\space{#1}}}
+\newcommand{\github}[1]{\small{\faGithubAlt\space{#1}}}
+\newcommand{\linkedin}[1]{\small{\faLinkedin\space{#1}}}
+
+% Define Recipient
+\newcommand{\recipient}[2]{{\noindent\bfseries #1}\\ {\small\scshape{#2}}}
+
+% Define Application Title
+\newcommand{\appltitle}[1]{{\noindent\bfseries\underline{#1}}\vspace{2pt}}
+
+% Define Greeting
+\newcommand{\greeting}[1]{#1}
+
+% Define paragraph sections
+\newcommand{\letterparagraph}[1]{\addvspace{2.5ex}\paragraph{\textnormal{#1}}}
+
+% Define salutations
+\newcommand{\salutations}[2]{\noindent#1\vspace{3.4mm} \\ \bfseries{#2}}
+
+% Define enclosure
+\newcommand{\encl}[1]{\textcolor{light}{\mdseries\textit{#1}}}
+
+%---------------------------------------------
+%%%%%%%%%%%%%%% Cover Letter Starts Here %%%%%%%%%%%%%%%
+
+\begin{document}
+
+  \begin{flushright}
+      \name{\firstnametxt}{\lastnametxt}\\
+      \position{Software Developer}\\
+      \address{\addresstxt}\\
+      \mobile{
+      	\href{tel:\phonetxt}{\phonetxt}} |
+      \email{
+      	\href{mailto:\emailtxt}{\emailtxt}} |
+      \linkedin{
+      	\href{https://www.\linkedIntxt}{\linkedIntxt}} |
+      \github{
+      	\href{https://\githubtxt}{\githubtxt}}
+      
+  \end{flushright}
+  
+  \vspace{8.4mm}
+  \recipient{Company Recruitment Team}{Google Inc.\\1600 Amphitheatre Parkway\\Mountain View, CA 94043}\\
+  {\small\textit{\today}}
+  \vspace{8.4mm}
+  
+  \appltitle{Application for Software Developer}\\
+  \greeting{Dear Mr./Ms./Dr. LastName},
+  
+  \letterparagraph{Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
+    \letterparagraph{Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
+    
+\hfill\vspace{\baselineskip}
+
+    \salutations{Sincerely,}{\firstnametxt\space\lastnametxt}
+    \vspace{8.4mm}\\
+    \encl{Attached: Curriculum Vitae}
+  
+\end{document}
+
